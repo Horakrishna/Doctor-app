@@ -12,7 +12,7 @@ const MyProfile = () => {
       line2: "Circle, Church Road, London",
     },
     gender: "Male",
-    dob: "2000-01-02",
+    dob: "2025-01-02",
   });
   const [isEdit, setIsEdit] = useState();
   return (
@@ -56,27 +56,27 @@ const MyProfile = () => {
           {isEdit ? (
             <p>
               <input
-                className="bg-gray-50"
+                className="bg-gray-100"
                 type="text"
                 onChange={(e) =>
                   setUserData((prev) => ({
                     ...prev,
-                    address: { ...prev, line1: e.target.value },
+                    address: { ...prev.address, line1: e.target.value },
                   }))
                 }
-                value={userData.line1}
+                value={userData.address.line1}
               />
               <br />
               <input
-                className="bg-gray-50"
+                className="bg-gray-100 mt-2"
                 type="text"
                 onChange={(e) =>
                   setUserData((prev) => ({
                     ...prev,
-                    address: { ...prev, line2: e.target.value },
+                    address: { ...prev.address, line2: e.target.value },
                   }))
                 }
-                value={userData.line2}
+                value={userData.address.line2}
               />
               <br />
             </p>
@@ -125,14 +125,14 @@ const MyProfile = () => {
       <div className="mt-10">
         {isEdit ? (
           <button
-            className="border border-primary px-8 py-2 rounded-full"
+            className="border border-primary px-8 py-2 rounded-full hover:bg-primary hover:text-white transition-all"
             onClick={() => setIsEdit(false)}
           >
             Save information
           </button>
         ) : (
           <button
-            className="border border-primary px-8 py-2 rounded-full"
+            className="border border-primary px-8 py-2 rounded-full hover:bg-primary hover:text-white transition-all"
             onClick={() => setIsEdit(true)}
           >
             Edit
