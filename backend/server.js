@@ -4,6 +4,8 @@ import express from 'express';
 import connectCloudinary from './config/cloudinary.js';
 import connectDB from './config/mongodb.js';
 import adminRouter from './routes/adminRoute.js';
+import doctotRouter from "./routes/DoctorRoute.js";
+import userRouter from "./routes/userRoute.js";
 // App config
 const app =express()
 const port =process.env.PORT || 4000
@@ -20,6 +22,10 @@ app.get('/',(req,res)=>{
 });
 // Admin Route
 app.use('/api/admin',adminRouter)
+// Doctor Route
+app.use('/api/doctor',doctotRouter)
+// User Route
+app.use('/api/user',userRouter)
 
 // Express App
 app.listen(port,()=> console.log("Server Started", port))
