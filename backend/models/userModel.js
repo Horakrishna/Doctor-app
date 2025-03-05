@@ -28,8 +28,8 @@ const userSchema = new mongoose.Schema(
       default: "Not Selected",
     },
     dob: {
-      type: String,
-      default: "Not Selected",
+      type: Date,
+      default:new Date("2025-03-05")
     },
     phone: {
       type: String,

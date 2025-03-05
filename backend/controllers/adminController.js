@@ -2,7 +2,9 @@ import bcrypt from 'bcrypt';
 import { v2 as cloudinary } from 'cloudinary';
 import jwt from 'jsonwebtoken';
 import validator from 'validator';
+import appiontmentModel from '../models/appiontment.js';
 import doctorModel from '../models/doctorModel.js';
+import userModel from '../models/userModel.js';
 // Api for Adding Doctor
 const  addDoctor =async(req,res)=>{
 
@@ -122,5 +124,87 @@ const allDoctors =async (req,res)=>{
      });
   }
 }
-export { addDoctor, allDoctors, loginAdmin };
+// Api to get all appiontment list
+const appiontmenstListAdmin =async (req,res)=>{
+  try {
+    const appiontments = await appiontmentModel.find({})
+    res.json({
+      success:true,
+      appiontments
+    })
+  } catch (error) {
+     console.log(error);
+     res.json({
+       success: false,
+       message: error.message,
+     });
+  }
+}
+// APi for Appiontment Cansalation
+
+const appiontmentCancelAdmin = async (req, res) => {
+  try {
+    const { appiontmentId } = req.body;
+    const appiontmentData = await appiontmentModel.findById(appiontmentId);
+
+    await appiontmentModel.findByIdAndUpdate(appiontmentId, {
+      cancelled: true,
+    });
+
+    // Releasing Doctor Slot from DoctorModel
+    const { docId, slotDate, slotTime } = appiontmentData;
+
+    const doctorData = await doctorModel.findById(docId);
+
+    let slots_booked = doctorData.slots_booked;
+
+    slots_booked[slotDate] = slots_booked[slotDate].filter(
+      (e) => e !== slotTime
+    );
+
+    await doctorModel.findByIdAndUpdate(docId, { slots_booked });
+    res.json({
+      success: true,
+      message: "Appiontment Cancel",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+// Api to get Dashboard data
+const adminDashboard = async(req,res)=>{
+  try {
+    // total number of users and Doctors
+    const doctors =await doctorModel.find({})
+    const users   =await userModel.find({})
+    const appiontments =await appiontmentModel.find({})
+
+    const dashData ={
+      doctors:doctors.length,
+      appiontments:appiontments.length,
+      patients:users.length,
+      latestAppiontments:appiontments.reverse().slice(0,5)
+    }
+    res.json({
+      success:true,
+      dashData
+    })
+   } catch (error) {
+     console.log(error);
+     res.json({
+       success: false,
+       message: error.message,
+     });
+  }
+}
+export {
+  addDoctor, adminDashboard, allDoctors,
+  appiontmenstListAdmin,
+  appiontmentCancelAdmin,
+  loginAdmin
+};
 

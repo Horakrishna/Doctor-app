@@ -3,6 +3,7 @@ import React, { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS
 import { AdminContext } from "../context/AdminContext";
+import { DoctorContext } from "../context/DoctorContext";
 
 const Login = () => {
   const [state, setState] = useState("Admin");
@@ -11,6 +12,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   //connnect to backend
   const { setAToken, backendUrl } = useContext(AdminContext);
+  // connect Docdata
+  const { setDToken } = useContext(DoctorContext);
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     // Api Call
@@ -26,8 +29,23 @@ const Login = () => {
         } else {
           toast.error(data.message);
         }
+      } else {
+        // Doctor Login
+        const { data } = await axios.post(backendUrl + "/api/doctor/login", {
+          email,
+          password,
+        });
+        if (data.success) {
+          localStorage.setItem("dToken", data.token);
+          setDToken(data.token);
+          console.log(data.token);
+        } else {
+          toast.error(data.message);
+        }
       }
-    } catch (error) {}
+    } catch (error) {
+      toast.error(data.message);
+    }
   };
   return (
     <form onSubmit={onSubmitHandler} className="min-h-[80vh] flex items-center">

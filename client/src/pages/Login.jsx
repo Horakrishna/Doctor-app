@@ -1,9 +1,11 @@
 import axios from "axios";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AppContext } from "../context/AppContext";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [state, setState] = useState("Sign Up");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +20,7 @@ const Login = () => {
     try {
       if (state === "Sign Up") {
         // Register User
-        const { data } = await axios.post( backendUrl + "/api/user/register", {
+        const { data } = await axios.post(backendUrl + "/api/user/register", {
           name,
           password,
           email,
@@ -31,13 +33,14 @@ const Login = () => {
         }
       } else {
         // Call Login Api
-        const { data } = await axios.post( backendUrl + "/api/user/login", {
+        const { data } = await axios.post(backendUrl + "/api/user/login", {
           email,
           password,
         });
         if (data.success) {
           localStorage.setItem("token", data.token);
           setToken(data.token);
+          toast.success(data.message);
         } else {
           toast.error(data.message);
         }
@@ -46,6 +49,11 @@ const Login = () => {
       toast.error(error.message);
     }
   };
+  useEffect(() => {
+    if (token) {
+      navigate("/");
+    }
+  }, [token]);
   return (
     <form
       onSubmit={onSubmitHandler}
